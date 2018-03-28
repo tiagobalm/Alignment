@@ -20,28 +20,35 @@ def is_diagonal(pos1, pos2):
     return False
 
 
-def print_genes(paths, seq1, seq2):
-    print('-' * 100)
+def print_result(paths, seq1, seq2):
     for p in paths:
         l1 = []
         l2 = []
+        alignment = []
+
         for i in range(0, len(p) - 1):
 
             if is_left(p[i], p[i + 1]):
                 l1.insert(0, '-')
                 l2.insert(0, seq1[p[i][1] - 1])
+                alignment.insert(0, ' ')
 
             elif is_up(p[i], p[i + 1]):
                 l1.insert(0, seq2[p[i][0] - 1])
                 l2.insert(0, '-')
+                alignment.insert(0, ' ')
 
             elif is_diagonal(p[i], p[i + 1]):
                 l1.insert(0, seq2[p[i][0] - 1])
                 l2.insert(0, seq1[p[i][1] - 1])
+                if seq2[p[i][0] - 1] == seq1[p[i][1] - 1]:
+                    alignment.insert(0, '|')
+                else:
+                    alignment.insert(0, '.')
 
-        print(l2)
-        print(l1)
-        print('-' * 100)
+        print(''.join(l2))
+        print(''.join(alignment))
+        print(''.join(l1))
 
 
 def score(character1, character2, is_dna):
@@ -113,8 +120,4 @@ def needleman_wunsch(seq1, seq2, gap, is_dna):
                 matrix_scores[i - 1][j] + gap, matrix_scores[i][j - 1] + gap)
 
     all_paths = traceback(seq1, seq2, matrix_scores, tam_seq1, tam_seq2, gap, is_dna)
-    print()
-    print_genes(all_paths, seq1, seq2)
-
-
-needleman_wunsch('ACCGA', 'AGCACCG', -1, True)
+    print_result(all_paths, seq1, seq2)

@@ -57,9 +57,9 @@ def print_genes(paths,seq2,seq1,h,g,custo_acertar,custo_errar,score_max):
                 
         gaps=count_open_gaps(l1,l2)
         if sum(score[:])+gaps*h==score_max:
-            print "seq1->",l2
-            print "seq2->",l1
-            print "score max=", score_max
+            print("seq1->",l2)
+            print("seq2->",l1)
+            print("score max=", score_max)
             print('-'*50)
 
 
