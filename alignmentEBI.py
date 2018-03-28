@@ -7,8 +7,8 @@ from alignment import needleman_wunsch
 EBI_URL = "http://www.ebi.ac.uk/Tools/services/rest/emboss_needle/run/"
 EBI_RESULT_URL = "http://www.ebi.ac.uk/Tools/services/rest/emboss_needle/result/"
 REGEX = "(?<=\d )[AGVLYETDFQHICSMKPRNW\-]{1,50}"
-FILE1 = "HumanHemoglobin"
-FILE2 = "AtelesHemoglobin"
+FILE1 = "HBA_CTEGU"
+FILE2 = "HBA_ATEGE"
 
 # Request data
 data = {"email": "up201305665@fe.up.pt",
@@ -23,6 +23,43 @@ data = {"email": "up201305665@fe.up.pt",
         "asequence": open("./samples/"+FILE1, "r").read(),
         "bsequence": open("./samples/"+FILE2, "r").read()
         }
+
+
+def parse_ebi_result(result):
+
+    result = re.sub(re.compile("#.*?\n"), "", result)
+    p = re.compile(REGEX)
+    m = p.findall(result)
+    asequence = m[0::2]
+    bsequence = m[1::2]
+    asequence = ''.join(asequence)
+    bsequence = ''.join(bsequence)
+
+    alignment = result.split('\n');
+    alignment = alignment[3::4]
+
+    for x in range(0, len(alignment)):
+        alignment[x] = alignment[x][21::]
+
+    alignment = ''.join(alignment)
+
+    print("EBI RESULT: ")
+    print(asequence)
+    print(alignment)
+    print(bsequence)
+
+
+def parse_files_for_local_alignment():
+    asequence = open("./samples/" + FILE1, "r").read()
+    bsequence = open("./samples/" + FILE2, "r").read()
+
+    asequence = asequence.split('\n')[1::]
+    bsequence = bsequence.split('\n')[1::]
+
+    asequence = ''.join(asequence)
+    bsequence = ''.join(bsequence)
+
+    return asequence, bsequence
 
 
 def get_alignment_from_ebi():
@@ -41,24 +78,11 @@ def get_alignment_from_ebi():
 
     print("[{0}] WEBSERVICE RESULT {1}".format(datetime.now(), result))
 
-    result = result.split('\n')
-    alignmentEBI = result[3::4]
-    alignmentEBI = ''.join(alignmentEBI).replace(" ", "")
+    parse_ebi_result(result)
 
-    asequence = open("./samples/" + FILE1, "r").read()
-    bsequence = open("./samples/" + FILE2, "r").read()
-
-    asequence = asequence.split('\n')[1::]
-    bsequence = bsequence.split('\n')[1::]
-
-    asequence = ''.join(asequence)
-    bsequence = ''.join(bsequence)
-
-    print("EBI RESULT: ")
-    print(asequence)
-    print(alignmentEBI)
-    print(bsequence)
     print()
+
+    asequence, bsequence = parse_files_for_local_alignment()
 
     print('-' * 100)
     print()
