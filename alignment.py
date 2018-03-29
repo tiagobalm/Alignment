@@ -20,7 +20,10 @@ def is_diagonal(pos1, pos2):
     return False
 
 
-def print_result(paths, seq1, seq2, is_dna):
+def build_result(paths, seq1, seq2, is_dna):
+    result = [[0] * 3 for i in range(len(paths))]
+    counter = 0
+
     for p in paths:
         l1 = []
         l2 = []
@@ -50,9 +53,12 @@ def print_result(paths, seq1, seq2, is_dna):
                     else:
                         alignment.insert(0, '.')
 
-        print(''.join(l2))
-        print(''.join(alignment))
-        print(''.join(l1))
+        result[counter][0] = ''.join(l2)
+        result[counter][1] = ''.join(alignment)
+        result[counter][2] = ''.join(l1)
+        counter += 1
+
+    return result
 
 
 def score(character1, character2, is_dna):
@@ -124,4 +130,15 @@ def needleman_wunsch(seq1, seq2, gap, is_dna):
                 matrix_scores[i - 1][j] + gap, matrix_scores[i][j - 1] + gap)
 
     all_paths = traceback(seq1, seq2, matrix_scores, tam_seq1, tam_seq2, gap, is_dna)
-    print_result(all_paths, seq1, seq2, is_dna)
+    return build_result(all_paths, seq1, seq2, is_dna)
+
+
+def align_locally(asequence, bsequence, gap, is_dna):
+
+    asequence = asequence.split('\n')[1::]
+    bsequence = bsequence.split('\n')[1::]
+
+    asequence = ''.join(asequence)
+    bsequence = ''.join(bsequence)
+
+    return needleman_wunsch(asequence, bsequence, gap, is_dna)

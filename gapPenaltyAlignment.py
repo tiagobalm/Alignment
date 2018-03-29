@@ -129,8 +129,7 @@ def alinhamento_afim(seq1, seq2, h, g, custo_acertar, custo_errar):
             M[i][j] = max(M[i-1][j-1], I_x[i-1][j-1], I_y[i-1][j-1])+score(seq1[i-1],seq2[j-1],custo_acertar,custo_errar)
             I_x[i][j] = max(M[i-1][j]+h+g,I_x[i-1][j]+g)
             I_y[i][j] = max(M[i][j-1]+h+g,I_y[i][j-1]+g)
-    
-    
+
     first_move=find_first_move(seq1,seq2,M,I_x,I_y)
   
     print(path([],first_move,seq1,seq2,M,I_x,I_y,custo_acertar,custo_errar,h,g))

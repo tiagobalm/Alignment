@@ -26,6 +26,7 @@ data = {"email": "up201305665@fe.up.pt",
 
 
 def parse_ebi_result(result):
+    ebi_result = []
 
     result = re.sub(re.compile("#.*?\n"), "", result)
     p = re.compile(REGEX)
@@ -35,7 +36,7 @@ def parse_ebi_result(result):
     asequence = ''.join(asequence)
     bsequence = ''.join(bsequence)
 
-    alignment = result.split('\n');
+    alignment = result.split('\n')
     alignment = alignment[3::4]
 
     for x in range(0, len(alignment)):
@@ -43,29 +44,17 @@ def parse_ebi_result(result):
 
     alignment = ''.join(alignment)
 
-    print("EBI RESULT: ")
-    print(asequence)
-    print(alignment)
-    print(bsequence)
+    ebi_result.append(asequence)
+    ebi_result.append(alignment)
+    ebi_result.append(bsequence)
+
+    return ebi_result
 
 
-def parse_files_for_local_alignment():
-    asequence = open("./samples/" + FILE1, "r").read()
-    bsequence = open("./samples/" + FILE2, "r").read()
-
-    asequence = asequence.split('\n')[1::]
-    bsequence = bsequence.split('\n')[1::]
-
-    asequence = ''.join(asequence)
-    bsequence = ''.join(bsequence)
-
-    return asequence, bsequence
-
-
-def get_alignment_from_ebi():
+def get_alignment_from_ebi(request_data):
 
     print("[{0}] SENDING REQUEST TO {1}".format(datetime.now(),EBI_URL))
-    r = requests.post(EBI_URL, data)
+    r = requests.post(EBI_URL, request_data)
     print ("JOB ID = {}".format(r.text))
 
     result = requests.get(EBI_RESULT_URL + "{jobID}/aln".format(jobID=r.text))
@@ -78,16 +67,4 @@ def get_alignment_from_ebi():
 
     print("[{0}] WEBSERVICE RESULT {1}".format(datetime.now(), result))
 
-    parse_ebi_result(result)
-
-    print()
-
-    asequence, bsequence = parse_files_for_local_alignment()
-
-    print('-' * 100)
-    print()
-    print("LOCAL RESULT: ")
-    needleman_wunsch(asequence, bsequence, -10, False)
-
-
-get_alignment_from_ebi()
+    return parse_ebi_result(result)
