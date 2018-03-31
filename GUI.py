@@ -3,6 +3,7 @@ from tkinter import ttk
 import tkinter.scrolledtext as tkst
 from alignmentEBI import get_alignment_from_ebi
 from alignment import align_locally
+from gapPenaltyAlignment import gap_penalty_align
 
 
 def get_result(event):
@@ -26,10 +27,18 @@ def get_result(event):
     ebiResult.delete(1.0, END)
     ebiResult.insert(INSERT, ebi_result)
 
-    local_results = align_locally(asequenceText.get(1.0, END), bsequenceText.get(1.0, END),
-                                 float(gapOpenVariable.get()) * -1, True if endWeightVar.get() else False)
-
     local_result = ""
+
+    if radioButtonVar.get() == "linear":
+        local_results = align_locally(asequenceText.get(1.0, END), bsequenceText.get(1.0, END),
+                                     float(gapOpenVariable.get()) * -1,
+                                      True if defaultStyle.get().lower() == "dna" else False)
+    else:
+        local_results = gap_penalty_align(asequenceText.get(1.0, END), bsequenceText.get(1.0, END),
+                                      float(gapOpenVariable.get()) * -1,
+                                          float(gapNextVariable.get()) * -1,
+                                          True if defaultStyle.get().lower() == "dna" else False)
+
     for result in local_results:
         local_result += '\n'.join(result)
         local_result += '\n\n'
@@ -93,14 +102,17 @@ bsequenceText.grid(row=3, column=0, sticky=W)
 
 optionsFrame = Frame(mainFrame)
 
+radioButtonVar = StringVar()
+radioButtonVar.set("linear")
+
 linearCostLabel = Label(optionsFrame, text="Linear Cost")
 linearCostLabel.grid(row=0, column=0, sticky=W, pady=(40, 10))
-linearCostButton = Radiobutton(optionsFrame, value=1, command=lambda: disable_input())
+linearCostButton = Radiobutton(optionsFrame, variable=radioButtonVar, value="linear", command=lambda: disable_input())
 linearCostButton.grid(row=0, column=1, sticky=W, pady=(40, 10))
 
 gapPenaltyLabel = Label(optionsFrame, text="Gap Penalty")
 gapPenaltyLabel.grid(row=0, column=2, sticky=W, pady=(40, 10))
-gapPenaltyButton = Radiobutton(optionsFrame, value=2, command=lambda: enable_input())
+gapPenaltyButton = Radiobutton(optionsFrame, variable=radioButtonVar, value="gap", command=lambda: enable_input())
 gapPenaltyButton.grid(row=0, column=3, sticky=W, pady=(40, 10))
 
 matrixLabel = Label(optionsFrame, text="Matrix")

@@ -1,139 +1,164 @@
-
-def preencher_primeira_coluna(matriz,valor):
-    for i in range(len(matriz)):
-            matriz[i][0]=valor
-    return matriz
+from BLOSUM62 import *
+from DNAfull import *
 
 
-def preencher_primeira_linha(matriz,valor):
-    for j in range(len(matriz[0])):
-            matriz[0][j]=valor
-    return matriz
+def fill_first_column(matrix, value):
+    for i in range(len(matrix)):
+        matrix[i][0] = value
+    return matrix
 
 
-def criar_matriz(dim1,dim2):
-    matriz=[[0 for x in range(dim1)] for y in range(dim2)]
-    return matriz
+def fill_first_row(matrix, value):
+    for j in range(len(matrix[0])):
+        matrix[0][j] = value
+    return matrix
 
 
-def score(caracter1, caracter2, custo_acertar, custo_errar ):
-    if caracter1==caracter2:
-        return custo_acertar
-    if caracter1!=caracter2:
-        return custo_errar
+def create_matrix(dim1, dim2):
+    matrix = [[0 for x in range(dim1)] for y in range(dim2)]
+    return matrix
 
 
-def find_first_move(seq1,seq2,M,I_x,I_y):
-    tam_seq1=len(seq1)
-    tam_seq2=len(seq2)
-    first_move=[]
-    score_max= max(M[tam_seq1][tam_seq2],I_x[tam_seq1][tam_seq2],I_y[tam_seq1][tam_seq2])
-    if score_max==M[tam_seq1][tam_seq2]:
-        first_move.append(['DIAGONAL',tam_seq1,tam_seq2])
-    if score_max==I_x[tam_seq1][tam_seq2]:
-        first_move.append(['UP',tam_seq1,tam_seq2])
-    if score_max==I_y[tam_seq1][tam_seq2]:
-        first_move.append(['LEFT',tam_seq1,tam_seq2])
+def score(character1, character2, is_dna):
+    if is_dna:
+        return DNAfull[letters_map_DNA[character1]][letters_map_DNA[character2]]
+    else:
+        return blossum62[letters_map_proteins[character1]][letters_map_proteins[character2]]
+
+
+def find_first_move(seq1, seq2, m, i_x, i_y):
+    tam_seq1 = len(seq1)
+    tam_seq2 = len(seq2)
+    first_move = []
+    score_max = max(m[tam_seq1][tam_seq2], i_x[tam_seq1][tam_seq2], i_y[tam_seq1][tam_seq2])
+    if score_max == m[tam_seq1][tam_seq2]:
+        first_move.append(['DIAGONAL', tam_seq1, tam_seq2])
+    if score_max == i_x[tam_seq1][tam_seq2]:
+        first_move.append(['UP', tam_seq1, tam_seq2])
+    if score_max == i_y[tam_seq1][tam_seq2]:
+        first_move.append(['LEFT', tam_seq1, tam_seq2])
     return first_move
         
 
-def find_next_move(seq1,seq2,first_move,M,I_x,I_y,custo_acertar,custo_errar,h,g):
-    for m in first_move:
-        if m[1] == 0 and m[2] == 0:
+def find_next_move(seq1, seq2, first_move, m, i_x, i_y, h, g, is_dna):
+    for move in first_move:
+        if move[1] == 0 and move[2] == 0:
             return None
-        elif m[1] == 0 and m[2] != 0:
-                return [['LEFT',0,m[2]-1]]
-        elif m[2] == 0 and m[1] != 0:
-                return [['UP',m[1]-1,0]]
+        elif move[1] == 0 and move[2] != 0:
+                return [['LEFT', 0, move[2]-1]]
+        elif move[2] == 0 and move[1] != 0:
+                return [['UP', move[1]-1, 0]]
     
-    next_move=[]
+    next_move = []
     
-    for m in first_move:
-        if m[0]=='DIAGONAL':
-            if M[m[1]][m[2]]==M[m[1]-1][m[2]-1]+score(seq1[m[1]-1],seq2[m[2]-1],custo_acertar,custo_errar):
-                next_move.append(['DIAGONAL',m[1]-1,m[2]-1])
-            if M[m[1]][m[2]]==I_x[m[1]-1][m[2]-1]+score(seq1[m[1]-1],seq2[m[2]-1],custo_acertar,custo_errar):
-                next_move.append(['UP',m[1]-1,m[2]-1])
-            if M[m[1]][m[2]]==I_y[m[1]-1][m[2]-1]+score(seq1[m[1]-1],seq2[m[2]-1],custo_acertar,custo_errar):
-                next_move.append(['LEFT',m[1]-1,m[2]-1])
-        if m[0]=='LEFT':
-            if I_y[m[1]][m[2]]==M[m[1]][m[2]-1]+h+g:
-                next_move.append(['DIAGONAL',m[1],m[2]-1])
-            if I_y[m[1]][m[2]]==I_y[m[1]][m[2]-1]+g:
-                next_move.append(['LEFT',m[1],m[2]-1])
-        if m[0]=='UP':
-            if I_x[m[1]][m[2]]==M[m[1]-1][m[2]]+h+g:
-                next_move.append(['DIAGONAL',m[1]-1,m[2]])
-            if I_x[m[1]][m[2]]==I_x[m[1]-1][m[2]]+g:
-                next_move.append(['UP',m[1]-1,m[2]])
+    for move in first_move:
+        if move[0] == 'DIAGONAL':
+            if m[move[1]][move[2]] == m[move[1]-1][move[2]-1]+score(seq1[move[1]-1], seq2[move[2]-1], is_dna):
+                next_move.append(['DIAGONAL', move[1]-1, move[2]-1])
+            if m[move[1]][move[2]] == i_x[move[1]-1][move[2]-1]+score(seq1[move[1]-1], seq2[move[2]-1], is_dna):
+                next_move.append(['UP', move[1]-1, move[2]-1])
+            if m[move[1]][move[2]] == i_y[move[1]-1][move[2]-1]+score(seq1[move[1]-1], seq2[move[2]-1], is_dna):
+                next_move.append(['LEFT', move[1]-1, move[2]-1])
+        if move[0] == 'LEFT':
+            if i_y[move[1]][move[2]] == m[move[1]][move[2]-1]+h+g:
+                next_move.append(['DIAGONAL', move[1], move[2]-1])
+            if i_y[move[1]][move[2]] == i_y[move[1]][move[2]-1]+g:
+                next_move.append(['LEFT', move[1], move[2]-1])
+        if move[0] == 'UP':
+            if i_x[move[1]][move[2]] == m[move[1]-1][move[2]]+h+g:
+                next_move.append(['DIAGONAL', move[1]-1, move[2]])
+            if i_x[move[1]][move[2]] == i_x[move[1]-1][move[2]]+g:
+                next_move.append(['UP', move[1]-1, move[2]])
 
     return next_move
 
 
-def genes(seq1,seq2,path):
-    s1=[]
-    s2=[]
-  
-    for i in range(len(path)-1):
-        if path[i][0]=='DIAGONAL':
-            s1.append(seq1[path[i][1]-1])
-            s2.append(seq2[path[i][2]-1])
-        elif path[i][0]=='UP':
-            s1.append(seq1[path[i][1]-1])
-            s2.append('-')
-        elif path[i][0]=='LEFT':
-            s1.append('-')
-            s2.append(seq2[path[i][2]-1])
-        
-    print('seq1:', s1[::-1])
-    print('seq2:', s2[::-1])
+def build_result(all_paths, seq1, seq2, is_dna):
+    result = [[0] * 3 for i in range(len(all_paths))]
+    counter = 0
+
+    for p in all_paths:
+        s1 = []
+        s2 = []
+        alignment = []
+
+        for i in range(len(p)-1):
+            if p[i][0] == 'DIAGONAL':
+                s1.append(seq1[p[i][1]-1])
+                s2.append(seq2[p[i][2]-1])
+                if seq2[p[i][2] - 1] == seq1[p[i][1] - 1]:
+                    alignment.insert(0, '|')
+                else:
+                    if score(seq1[p[i][1] - 1], seq2[p[i][2] - 1], is_dna) >= 1:
+                        alignment.insert(0, ':')
+                    else:
+                        alignment.insert(0, '.')
+            elif p[i][0] == 'UP':
+                s1.append(seq1[p[i][1]-1])
+                s2.append('-')
+                alignment.insert(0, ' ')
+            elif p[i][0] == 'LEFT':
+                s1.append('-')
+                s2.append(seq2[p[i][2]-1])
+                alignment.insert(0, ' ')
+
+        result[counter][0] = ''.join(s1[::-1])
+        result[counter][1] = ''.join(alignment)
+        result[counter][2] = ''.join(s2[::-1])
+        counter += 1
+
+    return result
 
 
-def path(current_path,first_moves,seq1,seq2,M,I_x,I_y,custo_acertar,custo_errar,h,g):
+def path(all_paths, current_path, first_moves, seq1, seq2, m, i_x, i_y, h, g, is_dna):
     for f in first_moves:
-        if f[1]==0 and f[2]==0:
-            p=list(current_path)
+        if f[1] == 0 and f[2] == 0:
+            p = list(current_path)
             p.append(f)
-            print(genes(seq1,seq2,p))
+            all_paths.append(current_path + [f])
             return
-        next_moves=find_next_move(seq1,seq2,[f],M,I_x,I_y,custo_acertar,custo_errar,h,g)
-        copy=list(current_path)
+        next_moves = find_next_move(seq1, seq2, [f], m, i_x, i_y, h, g, is_dna)
+        copy = list(current_path)
         copy.append(f)
         for n in next_moves:
-            path(copy,[n],seq1,seq2,M,I_x,I_y,custo_acertar,custo_errar,h,g)
+            path(all_paths, copy, [n], seq1, seq2, m, i_x, i_y, h, g, is_dna)
 
 
-def alinhamento_afim(seq1, seq2, h, g, custo_acertar, custo_errar):
-    tam_seq1=len(seq1)
-    tam_seq2=len(seq2)
-    menos_infinito=float("-inf")
+def gap_penalty_align(seq1, seq2, h, g, is_dna):
+    seq1 = seq1.split('\n')[1::]
+    seq2 = seq2.split('\n')[1::]
 
-    M=criar_matriz(tam_seq2+1,tam_seq1+1)
-    I_x=criar_matriz(tam_seq2+1,tam_seq1+1)
-    I_y=criar_matriz(tam_seq2+1,tam_seq1+1)
+    seq1 = ''.join(seq1)
+    seq2 = ''.join(seq2)
 
-    M=preencher_primeira_coluna(M,menos_infinito)
-    M=preencher_primeira_linha(M,menos_infinito)
-    M[0][0]=0
+    tam_seq1 = len(seq1)
+    tam_seq2 = len(seq2)
+    minus_infinity = float("-inf")
 
-    I_x=preencher_primeira_linha(I_x,menos_infinito)
-    for i in range(1,tam_seq1+1):
-        I_x[i][0]=h+g*i
+    m = create_matrix(tam_seq2+1, tam_seq1+1)
+    i_x = create_matrix(tam_seq2+1, tam_seq1+1)
+    i_y = create_matrix(tam_seq2+1, tam_seq1+1)
 
-    I_y=preencher_primeira_coluna(I_y,menos_infinito)
-    for j in range(1,tam_seq2+1):
-        I_y[0][j]=h+g*j
+    m = fill_first_column(m, minus_infinity)
+    m = fill_first_row(m, minus_infinity)
+    m[0][0] = 0
+
+    i_x = fill_first_row(i_x, minus_infinity)
+    for i in range(1, tam_seq1+1):
+        i_x[i][0] = h+g*i
+
+    i_y = fill_first_column(i_y, minus_infinity)
+    for j in range(1, tam_seq2+1):
+        i_y[0][j] = h+g*j
 
     for i in range(1, tam_seq1+1):
         for j in range(1, tam_seq2+1):
-            M[i][j] = max(M[i-1][j-1], I_x[i-1][j-1], I_y[i-1][j-1])+score(seq1[i-1],seq2[j-1],custo_acertar,custo_errar)
-            I_x[i][j] = max(M[i-1][j]+h+g,I_x[i-1][j]+g)
-            I_y[i][j] = max(M[i][j-1]+h+g,I_y[i][j-1]+g)
+            m[i][j] = max(m[i-1][j-1], i_x[i-1][j-1], i_y[i-1][j-1])+score(seq1[i-1], seq2[j-1], is_dna)
+            i_x[i][j] = max(m[i-1][j]+h+g, i_x[i-1][j]+g)
+            i_y[i][j] = max(m[i][j-1]+h+g, i_y[i][j-1]+g)
 
-    first_move=find_first_move(seq1,seq2,M,I_x,I_y)
+    first_move = find_first_move(seq1, seq2, m, i_x, i_y)
+    all_paths = []
   
-    print(path([],first_move,seq1,seq2,M,I_x,I_y,custo_acertar,custo_errar,h,g))
-
-
-print(alinhamento_afim('AAT','ACACT',-3,-1,1,-1))
-print(alinhamento_afim('GCGCGTTAGACTAGCACCG','GGGTTGCACCG',-5,-1,3,-2))
+    path(all_paths, [], first_move, seq1, seq2, m, i_x, i_y, h, g, is_dna)
+    return build_result(all_paths, seq1, seq2, is_dna)
