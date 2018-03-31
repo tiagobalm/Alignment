@@ -111,11 +111,6 @@ def path(current_path,first_moves,seq1,seq2,M,I_x,I_y,custo_acertar,custo_errar,
                 path(copy,[n],seq1,seq2,M,I_x,I_y,custo_acertar,custo_errar,h,g)
 
 
-
-
-
-
-
 def alinhamento_afim_local(seq1, seq2, h, g, custo_acertar, custo_errar):
     tam_seq1=len(seq1)
     tam_seq2=len(seq2)
@@ -148,7 +143,6 @@ def alinhamento_afim_local(seq1, seq2, h, g, custo_acertar, custo_errar):
     first=first_moves(indices)
     print(path([],first,seq1,seq2,M,I_x,I_y,custo_acertar,custo_errar,h,g))
    
-
 
 print(alinhamento_afim_local('AAT','ACACT',-3,-1,1,-1))
 print(alinhamento_afim_local('GCGCGTTAGACTAGCACCG','GGGTTGCACCG',-5,-1,3,-2))

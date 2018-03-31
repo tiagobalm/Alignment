@@ -70,6 +70,17 @@ def enable_input():
     return
 
 
+def switch_matrices(event_object):
+    if styleDropDown.get() == "DNA":
+        matrixDropDown['values'] = matricesDNAOptions
+        matrixDropDown.set(matricesDNAOptions[0])
+    else:
+        matrixDropDown['values'] = matricesProteinOptions
+        matrixDropDown.set(matricesProteinOptions[0])
+
+    return
+
+
 def toggle_end_options():
     if endWeightVar.get():
         endExtendText.configure(state='normal')
@@ -118,9 +129,10 @@ gapPenaltyButton.grid(row=0, column=3, sticky=W, pady=(40, 15))
 matrixLabel = Label(optionsFrame, text="Matrix")
 matrixLabel.grid(row=1, column=0, sticky=W, pady=(0, 15))
 
-matricesOptions = ["BLOSUM62"]
-matrixDropDown = ttk.Combobox(optionsFrame, values=matricesOptions)
-matrixDropDown.set(matricesOptions[0])
+matricesProteinOptions = ["BLOSUM62"]
+matricesDNAOptions = ["DNAfull"]
+matrixDropDown = ttk.Combobox(optionsFrame, values=matricesProteinOptions)
+matrixDropDown.set(matricesProteinOptions[0])
 matrixDropDown.grid(row=1, column=1, sticky=(W, E), pady=(0, 15))
 
 gapOpenLabel = Label(optionsFrame, text="GAPOPEN")
@@ -173,6 +185,7 @@ styleLabel.grid(row=5, column=2, sticky=W, pady=(0, 12), padx=(10, 0))
 styleOptions = ["PROTEIN", "DNA"]
 styleDropDown = ttk.Combobox(optionsFrame, values=styleOptions)
 styleDropDown.set(styleOptions[0])
+styleDropDown.bind("<<ComboboxSelected>>", switch_matrices)
 styleDropDown.grid(row=5, column=3, sticky=(W, E), pady=(0, 15))
 
 submitButton = Button(optionsFrame, text="Submit")
