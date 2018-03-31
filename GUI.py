@@ -6,12 +6,22 @@ from alignment import align_locally
 from gapPenaltyAlignment import gap_penalty_align
 
 
+def build_result(result, every=150):
+    final_result = []
+    for i in range(0, len(result[0]), every):
+        final_result.append(result[0][i:i+every])
+        final_result.append(result[1][i:i + every])
+        final_result.append(result[2][i:i + every])
+        final_result.append('\n')
+    return '\n'.join(final_result)
+
+
 def get_result(event):
     status.set("PROCESSING...")
     Tk.update(root)
 
     data = {"email": "up201305665@fe.up.pt",
-            "matrix": "E"+matrixDropDown.get(),
+            "matrix": "E"+matrixDropDown.get().upper(),
             "gapopen": gapOpenVariable.get(),
             "gapext": gapNextVariable.get(),
             "endweight": "true" if endWeightVar.get() else "false",
@@ -23,7 +33,7 @@ def get_result(event):
             "bsequence": bsequenceText.get(1.0, END)
             }
 
-    ebi_result = '\n'.join(get_alignment_from_ebi(data))
+    ebi_result = build_result(get_alignment_from_ebi(data))
     ebiResult.delete(1.0, END)
     ebiResult.insert(INSERT, ebi_result)
 
@@ -40,8 +50,9 @@ def get_result(event):
                                           True if styleDropDown.get().lower() == "dna" else False)
 
     for result in local_results:
-        local_result += '\n'.join(result)
-        local_result += '\n\n'
+        local_result += build_result(result)
+        local_result += '\n'
+        local_result += '-' * 150
 
     localResult.delete(1.0, END)
     localResult.insert(INSERT, local_result)
@@ -90,6 +101,7 @@ def toggle_end_options():
         endOpenText.configure(state='disabled')
     return
 
+sys.setrecursionlimit(1500)
 
 root = Tk()
 
