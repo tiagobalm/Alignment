@@ -11,14 +11,14 @@ def get_result(event):
     Tk.update(root)
 
     data = {"email": "up201305665@fe.up.pt",
-            "matrix": "E"+defaultMatrix.get(),
+            "matrix": "E"+matrixDropDown.get(),
             "gapopen": gapOpenVariable.get(),
             "gapext": gapNextVariable.get(),
             "endweight": "true" if endWeightVar.get() else "false",
             "endopen": endOpenVariable.get(),
             "endextend": endExtendVariable.get(),
-            "format": defaultFormat.get().lower(),
-            "stype": defaultStyle.get().lower(),
+            "format": formatDropDown.get().lower(),
+            "stype": styleDropDown.get().lower(),
             "asequence": asequenceText.get(1.0, END),
             "bsequence": bsequenceText.get(1.0, END)
             }
@@ -32,12 +32,12 @@ def get_result(event):
     if radioButtonVar.get() == "linear":
         local_results = align_locally(asequenceText.get(1.0, END), bsequenceText.get(1.0, END),
                                      float(gapOpenVariable.get()) * -1,
-                                      True if defaultStyle.get().lower() == "dna" else False)
+                                      True if styleDropDown.get().lower() == "dna" else False)
     else:
         local_results = gap_penalty_align(asequenceText.get(1.0, END), bsequenceText.get(1.0, END),
                                       float(gapOpenVariable.get()) * -1,
                                           float(gapNextVariable.get()) * -1,
-                                          True if defaultStyle.get().lower() == "dna" else False)
+                                          True if styleDropDown.get().lower() == "dna" else False)
 
     for result in local_results:
         local_result += '\n'.join(result)
@@ -103,77 +103,77 @@ bsequenceText.grid(row=3, column=0, sticky=W)
 optionsFrame = Frame(mainFrame)
 
 radioButtonVar = StringVar()
-radioButtonVar.set("linear")
+radioButtonVar.set("gap")
 
 linearCostLabel = Label(optionsFrame, text="Linear Cost")
-linearCostLabel.grid(row=0, column=0, sticky=W, pady=(40, 10))
+linearCostLabel.grid(row=0, column=0, sticky=W, pady=(40, 15))
 linearCostButton = Radiobutton(optionsFrame, variable=radioButtonVar, value="linear", command=lambda: disable_input())
-linearCostButton.grid(row=0, column=1, sticky=W, pady=(40, 10))
+linearCostButton.grid(row=0, column=1, sticky=W, pady=(40, 15))
 
 gapPenaltyLabel = Label(optionsFrame, text="Gap Penalty")
-gapPenaltyLabel.grid(row=0, column=2, sticky=W, pady=(40, 10))
+gapPenaltyLabel.grid(row=0, column=2, sticky=W, pady=(40, 15))
 gapPenaltyButton = Radiobutton(optionsFrame, variable=radioButtonVar, value="gap", command=lambda: enable_input())
-gapPenaltyButton.grid(row=0, column=3, sticky=W, pady=(40, 10))
+gapPenaltyButton.grid(row=0, column=3, sticky=W, pady=(40, 15))
 
 matrixLabel = Label(optionsFrame, text="Matrix")
-matrixLabel.grid(row=1, column=0, sticky=W, pady=(0, 10))
+matrixLabel.grid(row=1, column=0, sticky=W, pady=(0, 15))
 
-defaultMatrix = StringVar(optionsFrame)
-defaultMatrix.set("BLOSUM62")
-matrixDropDown = OptionMenu(optionsFrame, defaultMatrix, "BLOSUM20")
-matrixDropDown.grid(row=1, column=1, sticky=(W, E), pady=(0, 10))
+matricesOptions = ["BLOSUM62"]
+matrixDropDown = ttk.Combobox(optionsFrame, values=matricesOptions)
+matrixDropDown.set(matricesOptions[0])
+matrixDropDown.grid(row=1, column=1, sticky=(W, E), pady=(0, 15))
 
 gapOpenLabel = Label(optionsFrame, text="GAPOPEN")
-gapOpenLabel.grid(row=2, column=0, sticky=W, pady=(0, 10))
+gapOpenLabel.grid(row=2, column=0, sticky=W, pady=(0, 15))
 gapOpenVariable = StringVar()
 gapOpenVariable.set("10.0")
 gapOpenText = Entry(optionsFrame, textvariable=gapOpenVariable)
-gapOpenText.grid(row=2, column=1, sticky=W, pady=(0, 10))
+gapOpenText.grid(row=2, column=1, sticky=W, pady=(0, 15))
 
 gapNextLabel = Label(optionsFrame, text="GAPNEXT")
-gapNextLabel.grid(row=2, column=2, sticky=W, pady=(0, 10), padx=(10, 0))
+gapNextLabel.grid(row=2, column=2, sticky=W, pady=(0, 15), padx=(10, 0))
 gapNextVariable = StringVar()
 gapNextVariable.set("0.5")
 gapNextText = Entry(optionsFrame, textvariable=gapNextVariable)
-gapNextText.grid(row=2, column=3, sticky=W, pady=(0, 10))
+gapNextText.grid(row=2, column=3, sticky=W, pady=(0, 15))
 
 endWeight = Label(optionsFrame, text="ENDWEIGHT")
-endWeight.grid(row=3, column=0, sticky=W, pady=(0, 10))
+endWeight.grid(row=3, column=0, sticky=W, pady=(0, 15))
 endWeightVar = IntVar()
 endWeightButton = Checkbutton(optionsFrame, variable=endWeightVar, command=toggle_end_options)
-endWeightButton.grid(row=3, column=1, sticky=W, pady=(0, 10))
+endWeightButton.grid(row=3, column=1, sticky=W, pady=(0, 15))
 
 endOpenLabel = Label(optionsFrame, text="ENDOPEN")
-endOpenLabel.grid(row=4, column=0, sticky=W, pady=(0, 10))
+endOpenLabel.grid(row=4, column=0, sticky=W, pady=(0, 15))
 endOpenVariable = StringVar()
 endOpenVariable.set("10.0")
 endOpenText = Entry(optionsFrame, textvariable=endOpenVariable)
-endOpenText.grid(row=4, column=1, sticky=W, pady=(0, 10))
+endOpenText.grid(row=4, column=1, sticky=W, pady=(0, 15))
 endOpenText.configure(state='disabled')
 
 endExtendLabel = Label(optionsFrame, text="ENDEXTEND")
-endExtendLabel.grid(row=4, column=2, sticky=W, pady=(0, 10), padx=(10, 0))
+endExtendLabel.grid(row=4, column=2, sticky=W, pady=(0, 15), padx=(10, 0))
 endExtendVariable = StringVar()
 endExtendVariable.set("0.5")
 endExtendText = Entry(optionsFrame, textvariable=endExtendVariable)
-endExtendText.grid(row=4, column=3, sticky=W, pady=(0, 10))
+endExtendText.grid(row=4, column=3, sticky=W, pady=(0, 15))
 endExtendText.configure(state='disabled')
 
 formatLabel = Label(optionsFrame, text="Format")
-formatLabel.grid(row=5, column=0, sticky=W, pady=(0, 10))
+formatLabel.grid(row=5, column=0, sticky=W, pady=(0, 15))
 
-defaultFormat = StringVar(optionsFrame)
-defaultFormat.set("Pair")
-formatDropDown = OptionMenu(optionsFrame, defaultFormat, "Pair")
-formatDropDown.grid(row=5, column=1, sticky=(W, E), pady=(0, 10))
+formatOptions = ["Pair"]
+formatDropDown = ttk.Combobox(optionsFrame, values=formatOptions)
+formatDropDown.set(formatOptions[0])
+formatDropDown.grid(row=5, column=1, sticky=(W, E), pady=(0, 15))
 
 styleLabel = Label(optionsFrame, text="Style")
-styleLabel.grid(row=5, column=2, sticky=W, pady=(0, 10), padx=(10, 0))
+styleLabel.grid(row=5, column=2, sticky=W, pady=(0, 12), padx=(10, 0))
 
-defaultStyle = StringVar(optionsFrame)
-defaultStyle.set("PROTEIN")
-styleDropDown = OptionMenu(optionsFrame, defaultStyle, "PROTEIN", "DNA")
-styleDropDown.grid(row=5, column=3, sticky=(W, E), pady=(0, 10))
+styleOptions = ["PROTEIN", "DNA"]
+styleDropDown = ttk.Combobox(optionsFrame, values=styleOptions)
+styleDropDown.set(styleOptions[0])
+styleDropDown.grid(row=5, column=3, sticky=(W, E), pady=(0, 15))
 
 submitButton = Button(optionsFrame, text="Submit")
 submitButton.grid(row=6, column=0, sticky=(W, E), columnspan=4, pady=(30, 0))
