@@ -1,7 +1,6 @@
 import requests
 import re
 from datetime import datetime
-from alignment import needleman_wunsch
 
 # EBI URLS
 EBI_URL = "http://www.ebi.ac.uk/Tools/services/rest/emboss_needle/run/"
@@ -10,7 +9,7 @@ REGEX = "(?<=\d )[AGVLYETDFQHICSMKPRNW\-]{1,50}"
 FILE1 = "HBA_CTEGU"
 FILE2 = "HBA_ATEGE"
 
-# Request data
+# Request data example
 data = {"email": "up201305665@fe.up.pt",
         "matrix": "EBLOSUM62",
         "gapopen": "10.0",
@@ -53,9 +52,9 @@ def parse_ebi_result(result):
 
 def get_alignment_from_ebi(request_data):
 
-    print("[{0}] SENDING REQUEST TO {1}".format(datetime.now(),EBI_URL))
+    print("[{0}] SENDING REQUEST TO {1}".format(datetime.now(), EBI_URL))
     r = requests.post(EBI_URL, request_data)
-    print ("JOB ID = {}".format(r.text))
+    print("JOB ID = {}".format(r.text))
 
     result = requests.get(EBI_RESULT_URL + "{jobID}/aln".format(jobID=r.text))
 
